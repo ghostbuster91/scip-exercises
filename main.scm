@@ -151,6 +151,7 @@
 (define (prime? a)
   (= (smallest-divisor a) a))
 
+;; (x * y) mod m = [(x mod m) * (y mod m)] mod m
 (define (expmod base expp m)
   (cond ((= expp 0) 1)
         ((even? expp)
@@ -191,4 +192,159 @@
 (smallest-divisor 19999)
 
 ;; 1.22
+
+(define (timed-prime-test n)
+  (start-prime-test n (runtime))
+  )
+
+(define (start-prime-test n start-time)
+  (if (prime? n)
+    (report-prime n (- (runtime) start-time)) false)
+  )
+
+(define (report-prime n elapsed-time)
+  (newline)
+  (display "**** ")
+  (display n)
+  (display " >> ")
+  (display elapsed-time)
+  true
+  )
+
+(timed-prime-test 77)
+(timed-prime-test 97)
+
+(define (search-for-primes n count)
+ (if(= count 0) "end" (
+                       if (timed-prime-test n) 
+                        (search-for-primes (+ n 1) (- count 1))
+                        (search-for-primes (+ n 1) count)
+                      )
+                )
+ )
+
+
+(search-for-primes 10000000 3)
+(search-for-primes 100000000 3)
+(search-for-primes 1000000000 3)
+
+;; 1.22 end
+
+;; 1.23 
+(define (smallest-divisor2 n)
+  (find-divisor2 n 2))
+
+(define (find-divisor2 n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor2 n (next test-divisor))))
+  )
+
+(define (next n)
+  (if (= n 2) 3 (+ n 2))
+  )
+
+(define (timed-prime-test2 n)
+  (start-prime-test2 n (runtime))
+  )
+
+(define (start-prime-test2 n start-time)
+  (if (prime2? n)
+    (report-prime n (- (runtime) start-time)) false)
+  )
+
+(define (prime2? a)
+  (= (smallest-divisor2 a) a))
+
+(define (search-for-primes2 n count)
+ (if(= count 0) "end" (
+                       if (timed-prime-test2 n) 
+                        (search-for-primes2 (+ n 1) (- count 1))
+                        (search-for-primes2 (+ n 1) count)
+                      )
+                )
+ )
+
+(search-for-primes 10000000 3)
+(search-for-primes 100000000 3)
+(search-for-primes 1000000000 3)
+
+;; 1.24
+
+;; Yes, we could but then we would be operating on numbers >> m which is worse than the current impl. 
+
+;; 1.27 
+
+
+(define (fermat-test2 n m)
+  (define (try-it a)
+    (= (expmod a n n) a))
+  (try-it m)
+  )
+
+(define (full-fermat n)
+    (define (full-test n a)
+      (cond ((= n a) true)
+            ((fermat-test2 n a) (full-test n (+ a 1)))
+            (else false)
+      )
+    )
+    (full-test n 2)
+  )
+
+(full-fermat 201)
+(full-fermat 17)
+(full-fermat 561)
+(full-fermat 1105)
+(full-fermat 1729)
+
+;; 1.28
+
+
+(define (miller-test n)
+  (define (try-it a)
+    (define (check-it x) 
+       (and (not (= x 0)) (= x 1)))
+    (check-it (miller-expmod a (- n 1) n))
+    )
+  (try-it (+ 1 (random (- n 1))))
+  )
+
+
+(define (miller-expmod base expp m)
+  (define (test-square x)
+      (define (check-nontrivial-sqrt1 x square) 
+       (if (and (= square 1) 
+                (not (= x 1)) 
+                (not (= x (- m 1)))) 
+           0 
+           square)
+       )
+    (check-nontrivial-sqrt1 x (remainder (square x) m))
+    )
+
+  (cond ((= expp 0) 1)
+        ((even? expp)
+         (test-square (miller-expmod base (/ expp 2) m))
+         )
+        (else (remainder (* base (miller-expmod base (- expp 1) m)) m))
+        )
+  )
+
+(define (full-miller n count)
+  (cond ((= count 0) true)
+        ((miller-test n) (full-miller n (- count 1)))
+        (else false))
+  )
+
+(full-miller 201 100)
+(full-miller 17 100)
+(full-miller 561 100)
+(full-miller 1105 100)
+(full-miller 1729 100)
+
+
+;; 1.28 end
+
+
 
