@@ -346,5 +346,64 @@
 
 ;; 1.28 end
 
+(define (sum term a next b)
+  (if (> a b)
+    0
+    (+ (term a)
+       (sum term (next a) next b))
+    )
+  )
 
+(define (inc n) (+ n 1))
 
+(define (sum-cubes a b)
+  (sum cube a inc b))
+
+(sum-cubes 5 10)
+
+(define (identity x) x)
+
+(define (sum-integers a b)
+  (sum identity a inc b)
+  )
+
+(sum-integers 1 10)
+
+(define (pi-sum a b)
+  (define (pi-term x)
+    (/ 1.0 (* x (+ x 2)))
+    )
+  (define (pi-next x)
+    (+ x 4)
+    )
+  (sum pi-term a pi-next b)
+  )
+
+(* 8 (pi-sum 1 1000))
+
+(define (integral f a b dx)
+  (define (term x)
+    (f (+ x (/ dx 2.0)))
+    )
+  (define (next x)
+    (+ x dx)
+    )
+  (* (sum term a next b) dx)
+  )
+
+(integral cube 0 1 0.01)
+(integral cube 0 1 0.001)
+
+;; 1.29
+
+(define (simpson f a b n)
+  (define (term k)
+    (* (cond ((or (= k 0) (= k n)) 1)
+             ((odd? k) 4)
+             (else 2)) (f (+ a (* k h))))
+    )
+  (define h (/ (- b a ) n)) 
+  (* (/ h 3.0) (sum term 0 inc n))
+  )
+
+(simpson cube 0 1 1000)
