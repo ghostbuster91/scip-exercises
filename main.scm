@@ -107,7 +107,7 @@
 
 (define (gcd a b)
   (if (= b 0) a 
-    (gcd b (reminder a b)))
+    (gcd b (remainder a b)))
 )
 ;; 1.20 start
 ;; gcd 206 40
@@ -407,3 +407,101 @@
   )
 
 (simpson cube 0 1 1000)
+
+;; 1.30
+
+(define (sum2 term a next b)
+  (define (iter a acc)
+    (if (> a b)
+        acc
+       (iter (next a) (+ acc (term a)))
+       )
+  )
+  (iter a 0)
+)
+
+(define (sum-cubes2 a b)
+  (sum2 cube a inc b))
+
+(sum-cubes 5 10)
+(sum-cubes2 5 10)
+
+;; 1.31
+
+(define (product term a next b)
+  (define (iter a acc)
+    (if (> a b)
+        acc
+       (iter (next a) (* acc (term a)))
+       )
+  )
+  (iter a 1)
+)
+
+(define (factorial n)
+  (product identity 1 inc n)
+  )
+
+(factorial 5)
+
+(define (pi-calc n)
+  (define (inc2 a)
+    (+ a 2.0))
+  (define (term a)
+    (* (/ a (+ a 1.0))
+       (/ (+ a 2.0) (+ a 1.0))
+       )
+    )
+  (product term 2.0 inc2 n)
+  )
+
+(* 4 (pi-calc 195.0))
+
+;; 1.32 
+
+(define (accumulate combiner null-value term a next b)
+  (define (iter a acc)
+    (if (> a b)
+      acc
+      (iter (next a) (combiner acc (term a)))
+      )
+    )
+  (iter a null-value)
+  )
+
+(define (sum3 f a next b)
+  (accumulate + 0 f a inc b))
+
+
+(define (sum-cubes3 a b)
+  (sum3 cube a inc b))
+
+(sum-cubes 5 10)
+(sum-cubes3 5 10)
+
+;; 1.33
+
+(define (filtered-accumulate combiner null-value term a next b predicate)
+  (define (iter a acc)
+    (if (> a b)
+      acc
+      (iter (next a) (if (predicate a) (combiner acc (term a))
+                       acc))
+      )
+    )
+  (iter a null-value)
+  )
+
+(define (square-sum-prime a b)
+  (filtered-accumulate + 0 square a inc b prime?)
+)
+
+(square-sum-prime 2 10)
+
+(define (product-rel-prime n)
+  (define (filter a)
+    (= 1 (gcd a n)))
+  (filtered-accumulate * 1 identity 2 inc n filter)
+  )
+
+(product-rel-prime 10)
