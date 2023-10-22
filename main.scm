@@ -391,6 +391,7 @@
   (* (sum term a next b) dx)
   )
 
+(display "******************************")
 (integral cube 0 1 0.01)
 (integral cube 0 1 0.001)
 
@@ -505,3 +506,15 @@
   )
 
 (product-rel-prime 10)
+
+(define (integral2 f a b dx)
+  (* (sum 
+       (lambda (x) (f (+ x (/ dx 2.0)))) 
+       a 
+       (lambda (x) (+ x dx))
+       b) 
+    dx)
+  )
+
+(integral2 cube 0 1 0.001)
+
