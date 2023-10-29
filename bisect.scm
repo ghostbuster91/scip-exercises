@@ -213,10 +213,7 @@
 ;; 1.45
 
 (define (pow n k)
-  (define (go acc t)
-    (if (= t 0) acc (go (* acc n) (- t 1)))
-  ) 
-  (go 1 k)
+  ((repeated (lambda (x) (* x n)) k) 1)
 )
 
 (define (nsqrt x n) 
