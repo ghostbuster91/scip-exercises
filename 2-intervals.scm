@@ -92,3 +92,8 @@
 (print-interval i3)
 (center i3)
 (percent i3)
+
+;; 2.13 2.14 2.15
+;; the root problem is that A/A is not 1 because the library reintroduces uncertainty even when it shouldn't
+
+
