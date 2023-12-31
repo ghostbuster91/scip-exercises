@@ -186,3 +186,90 @@
 (define x (list (list 1 2) (list 3 4)))
 (fringe x)
 (fringe (list x x))
+
+;; 2.29
+
+(define (make-mobile left right)
+    (list left right)
+  )
+
+(define (make-branch length structure)
+    (list length structure)
+  )
+
+(define (left-branch structure)
+  (car structure))
+
+(define (right-branch structure)
+  (car (cdr structure)))
+
+(define (branch-length branch)
+  (car branch))
+
+(define (branch-structure branch)
+  (car (cdr branch)))
+
+(define (total-weight-branch branch)
+    (let ((struct (branch-structure branch)))
+        (if (pair? struct)
+          (total-weight struct)
+          struct)
+      )
+  )
+
+(define (total-weight structure)
+  (let ((left (left-branch structure))
+        (right (right-branch structure)))
+       (+ (total-weight-branch left) (total-weight-branch right))
+  )
+)
+
+(define s1 (make-branch 2 3))
+(branch-structure s1)
+(branch-length s1)
+(total-weight-branch s1)
+
+(define s3 (make-mobile (make-branch 1 4) (make-branch 2 (make-mobile (make-branch 3 3) (make-branch 2 5)))))
+(total-weight s3)
+;; c)
+
+(define (total-force-branch branch)
+    (let ((struct (branch-structure branch))
+          (len (branch-length branch)))
+        (if (pair? struct)
+          (* len (total-force struct))
+          (* len struct))
+      )
+  )
+
+(define (total-force structure)
+  (let ((left (left-branch structure))
+        (right (right-branch structure)))
+       (+ (total-force-branch left) (total-force-branch right))
+  )
+)
+
+(total-force-branch s1)
+(total-force s3)
+
+(define (is-equal-branch? branch)
+    (let ((struct (branch-structure branch)))
+        (if (pair? struct)
+          (is-equal? struct)
+          true)
+      )
+  )
+
+(define (is-equal? structure)
+   (and (= (total-force-branch (left-branch structure)) (total-force-branch (right-branch structure))) (and (is-equal-branch? (left-branch structure)) (is-equal-branch? (right-branch structure)))) 
+  )
+
+
+(is-equal? s3)
+(define s4 (make-mobile (make-branch 2 18) (make-branch 1 (make-mobile (make-branch 3 6) (make-branch 2 9)))))
+(is-equal? s4)
+
+;; d) representation change
+;; A: not much, only right-branch and branch-structure selectors
+
+
