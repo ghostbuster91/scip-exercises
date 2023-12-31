@@ -78,10 +78,18 @@
   (iter items nil)
   )
 
-
-
+(display "square-list:")
+(newline)
 (square-list (list 1 2 3 4 5))
 
+(define (square-list2 items)
+  (cond ((null? items) nil)
+        (else (cons (* (car items) (car items)) 
+                    (square-list2 (cdr items))))
+        )
+  )
+
+(square-list2 (list 1 2 3 4 5))
 ;; 2.23
 
 (define  (for-each2 f items)
@@ -272,4 +280,44 @@
 ;; d) representation change
 ;; A: not much, only right-branch and branch-structure selectors
 
+;; 
 
+(define (scale-list ls factor)
+  (if (null? ls)
+    nil
+    (cons (* (car ls) factor)
+          (scale-list (cdr ls) factor))
+    )
+  )
+
+(scale-list (list 1 2 3 4 5) 10)
+
+(define (scale-list2 ls factor)
+  (map (lambda (x) (* x factor)) ls)
+)
+
+(scale-list2 (list 1 2 3 4 5) 10)
+
+
+(define (scale-tree tree factor)
+  (cond ((null? tree) nil)
+        ((not (pair? tree)) (* tree factor))
+        (else (cons (scale-tree (car tree) factor) 
+                    (scale-tree (cdr tree) factor)))
+        )
+)
+
+(scale-tree (list 1 (list 2 (list 3 4) 5) (list 6 7)) 10)
+
+;; 2.30
+
+(define (square-tree tree)
+  (cond ((null? tree) nil)
+        ((not (pair? tree)) (* tree tree))
+        (else (cons (square-tree (car tree)) 
+                    (square-tree (cdr tree))))
+        )
+  )
+
+
+(square-tree (list 1 (list 2 (list 3 4) 5) (list 6 7)))
